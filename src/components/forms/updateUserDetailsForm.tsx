@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import Image from "next/image";
-import { updateUser } from "@/lib/actions/user";
+// import { updateUser } from "@/lib/actions/user";
 import { CardWrapper } from "../shared/cardWrapper";
 import { DatePicker } from "@/components/ui/date-picker";
 import toast from "react-hot-toast";
