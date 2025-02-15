@@ -5,7 +5,10 @@ import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "../ui/ThemeProvider";
 import { ViewTransitions } from "next-view-transitions";
 import { SessionProvider } from "next-auth/react";
+import { SidebarProvider } from "../ui/sidebar";
 function AllProviders({ children }: { children: React.ReactNode }) {
+
+
   return (
     <ThemeProvider
       attribute="class"
@@ -13,6 +16,7 @@ function AllProviders({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
+      <SidebarProvider defaultOpen={true}>
       <ViewTransitions>
         <SessionProvider>{children}</SessionProvider>
         <Toaster
@@ -22,6 +26,7 @@ function AllProviders({ children }: { children: React.ReactNode }) {
           }}
         />
       </ViewTransitions>
+      </SidebarProvider>
     </ThemeProvider>
   );
 }

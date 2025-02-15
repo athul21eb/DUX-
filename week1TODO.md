@@ -27,7 +27,7 @@
         - [ x] Implement Server Action to:
             - [ x] Validate input.
             - [ x] Hash password (bcrypt).
-            - [x] Create user in `User` table (Prisma).
+            - [x ] Create user in `User` table (Prisma).
             - [ x] Send email verification link.
 
     *   **(5:00 PM - 7:00 PM): Email Verification Link:**
@@ -81,10 +81,10 @@
             - [x ] Redirect to sign-in.
 
     *   **(4:00 PM - 6:00 PM): Git Setup:**
-        - [ ] `git init`
-        - [ ] `.gitignore` (exclude `.env`, `node_modules`)
-        - [ ] Commit regularly.
-        - [ ] Push to remote repository (GitHub, GitLab, Bitbucket).
+        - [x ] `git init`
+        - [x ] `.gitignore` (exclude `.env`, `node_modules`)
+        - [x ] Commit regularly.
+        - [x     ] Push to remote repository (GitHub, GitLab, Bitbucket).
 
     *   **(6:00 PM - 10:00 PM): Data Access Layer Enhancements:**
         - [ x] `updateUser(id: string, data: Partial<UserData>)`
@@ -108,7 +108,7 @@
         - [ ] Create `Mentor` model (link to `User` model).
         - [ ] Create `/mentors` page.
         - [ ] Implement Server Action to fetch mentors (filter by `role = MENTOR`).
-        - [ ] Display mentor list (name, bio, expertise).
+        - [ ] Display mentor list (name, bio, expertise).       
 
     *   **(5:00 PM - 10:00 PM): Data Access Layer Enhancements:**
         - [ ] `getMentors()`
