@@ -50,7 +50,7 @@ export async function UpdateUserProfileAction(formData: UserFormValues, selected
 
     // Update the user if changes are detected
   const updated =   await updateUser(user.id, { name, phone, gender, dob, image: imageUrl ?? undefined });
- console.log(updated)
+
     // Revalidate the profile page
     revalidatePath("/profile");
 

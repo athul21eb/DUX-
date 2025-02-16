@@ -54,7 +54,7 @@ export function NavBar() {
               <Button asChild>
                 <Link href="/login">Login</Link>
               </Button>
-            ) : null}
+            ) :  <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300" />}
             <Sheet >
               <SheetTrigger asChild>
                 <Button variant="ghost" className="md:hidden" size="icon">

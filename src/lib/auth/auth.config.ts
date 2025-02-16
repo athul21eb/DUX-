@@ -7,30 +7,30 @@ import bcrypt from "bcryptjs";
 import { getUserByEmail } from "../db/user";
 
 
+
 const authConfig: NextAuthConfig = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-
     }),
     Credentials({
       async authorize(credentials) {
         const validatedData = LoginSchema.safeParse(credentials);
         if (!validatedData.success) return null;
+
         const { email, password } = validatedData.data;
-
-
         const user = await getUserByEmail(email);
 
-        if (!user || !user.password || !user.email) return null;
+        if (!user || !user.password) return null;
 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
-
         return isPasswordMatch ? user : null;
       },
     }),
   ],
+  
+
 };
 
 export default authConfig;

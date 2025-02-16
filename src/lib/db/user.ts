@@ -13,7 +13,7 @@ export interface UserData {
 
 
 // Create a new user
-export const createUser = async (data: UserData) => {
+export const createUser = async (data: any) => {
   try {
     const user = await database.user.create({
       data,

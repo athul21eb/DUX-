@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+
 
 import authConfig from "./auth.config";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { database } from "../db/database";
+
 import { getUserByEmail, getUserById, updateUser } from "../db/user";
 import {
   createGoogleOAuthAccount,
@@ -15,19 +17,20 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+
+  ...authConfig,
+
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         const existingUser = await getUserByEmail(user.email ?? "");
 
         if (existingUser) {
-          // Check if an account already exists for Google
           const existingGoogleAccount = await GoogleOAuthAccountById(
             existingUser.id ?? ""
           );
 
           if (!existingGoogleAccount) {
-            // Link Google account to the existing user
             await createGoogleOAuthAccount(existingUser.id, {
               providerAccountId: account.providerAccountId,
               access_token: account.access_token ?? null,
@@ -40,7 +43,6 @@ export const {
             });
           }
 
-          // Mark Google users as email verified
           if (!existingUser.emailVerified) {
             await updateUser(existingUser.id, { emailVerified: new Date() });
           }
@@ -55,12 +57,23 @@ export const {
 
       const existingUser = await getUserById(user.id ?? "");
 
-      if (!existingUser?.emailVerified) {
-        return false;
-      }
-
-      return true;
+      return !!existingUser?.emailVerified;
     },
+    async jwt({ token }) {
+      if (!token.sub) return token;
+
+      const existingUser = await getUserById(token.sub);
+
+      if (!existingUser) return token;
+
+      token.name = existingUser.name;
+      token.email = existingUser.email;
+      token.role = existingUser.role as string; // Ensure a default role is assigned
+      token.isOAuth = !existingUser.password;
+
+      return token;
+    },
+
     async session({ token, session }) {
       return {
         ...session,
@@ -68,30 +81,16 @@ export const {
           ...session.user,
           id: token.sub,
           isOAuth: token.isOAuth,
-          dob: token.dob,
-          gender: token.gender,
-          phone: token.phone,
+          role: token.role as string, // Ensure a default role
         },
       };
     },
-    async jwt({ token }) {
-      if (!token.sub) return token;
-      const existingUser = await getUserById(token.sub);
 
-      if (!existingUser) return token;
-      token.name = existingUser.name;
-      token.email = existingUser.email;
-      token.dob = existingUser.dob;
-      token.gender = existingUser.gender;
-      token.phone = existingUser.phone;
-      token.isOAuth = !!existingUser.password ? false : true;
-
-      return token;
-    },
   },
-  ...authConfig,
   session: {
     strategy: "jwt",
   },
   adapter: PrismaAdapter(database),
+
+
 });
