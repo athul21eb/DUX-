@@ -23,7 +23,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 import { useForm } from "react-hook-form";
-import { LoginSchema } from "@/validator/authforms";
+import { LoginSchema } from "@/utils/validator/authforms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/lib/actions/auth/login";
 import { z } from "zod";
@@ -59,7 +59,7 @@ export function LoginForm() {
     });
   };
   return (
-    <div className={"flex flex-col gap-6 "}>
+    <div className={"flex flex-col gap-6 mt-16"}>
 
         <CardWrapper title={<DUX />} description="Welcome Back">
           <div className="flex flex-col gap-4 mb-4">

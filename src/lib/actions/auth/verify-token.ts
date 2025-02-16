@@ -5,7 +5,7 @@ import {
   deleteVerificationToken,
   getVerificationTokenByToken,
 } from "@/lib/db/verification_token";
-import { sendVerificationEmail } from "@/lib/mail/verificationMail";
+import { sendVerificationEmail } from "@/utils/mail/verificationMail";
 import { generateVerificationToken } from "@/lib/token/token";
 
 export const emailVerificationByToken = async (token: string) => {

@@ -2,12 +2,12 @@
 import bcrypt from "bcryptjs";
 import { createOtp, deleteOtpByEmail, getOtpByEmail } from "@/lib/db/otp";
 import { changePasswordByEmail, getUserByEmail } from "@/lib/db/user";
-import { sendForgotPasswordOtp } from "@/lib/mail/otpMail";
-import { generateOtp } from "@/lib/token/otp";
+import { sendForgotPasswordOtp } from "@/utils/mail/otpMail";
+import { generateOtp } from "@/utils/token/otp";
 import {
   changPasswordSchema,
   ForgotPasswordSchema,
-} from "@/validator/authforms";
+} from "@/utils/validator/authforms";
 import { z } from "zod";
 
 /// verify email and send otp to email
@@ -109,7 +109,7 @@ export const changePasswordAction = async (
     );
 
 
- 
+
     if (isPasswordMatch) {
       return {
         success: false,

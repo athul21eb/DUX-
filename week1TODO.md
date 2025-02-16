@@ -56,10 +56,10 @@
 *   **Tasks:**
 
     *   **(9:00 AM - 12:00 PM): User Profile (View & Edit):**
-        - [ ] Create `/profile` page (protected).
-        - [ ] Display user information.
-        - [ ] Create "Edit Profile" form (name, etc.).
-        - [ ] Implement Server Action for profile updates.
+        - [ x] Create `/profile` page (protected).
+        - [ x] Display user information.
+        - [ x]x Create "Edit Profile" form (name, etc.).
+        - [ x] Implement Server Action for profile updates.
 
     *   **(1:00 PM - 4:00 PM): Forgot Password with OTP:**
         - [x ] Create "Forgot Password" page (`/forgot-password`).
@@ -108,7 +108,7 @@
         - [ ] Create `Mentor` model (link to `User` model).
         - [ ] Create `/mentors` page.
         - [ ] Implement Server Action to fetch mentors (filter by `role = MENTOR`).
-        - [ ] Display mentor list (name, bio, expertise).       
+        - [ ] Display mentor list (name, bio, expertise).
 
     *   **(5:00 PM - 10:00 PM): Data Access Layer Enhancements:**
         - [ ] `getMentors()`

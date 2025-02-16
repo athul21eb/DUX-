@@ -1,87 +1,108 @@
-"use client";
+'use client'
 
+import { useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, Key, Home, MessageSquare, Wallet } from "lucide-react";
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { type LucideIcon, Home, User, Clock, MessageSquare, Key, Wallet } from "lucide-react";
 import {
+  Sidebar as ShadcnSidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "next-view-transitions";
-import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { VisuallyHidden } from "../ui/vishually-hidden";
+import DUX from "../ui/Dux";
 
-const menuItems = [
-  { href: "/user", icon: Home, label: "Dashboard" }, // Home
-  { href: "/user/change-password", icon: Key, label: "Change Password" }, // Key
-  { href: "/user/sessions", icon: User, label: "Sessions" }, // User
-  { href: "/user/wallet", icon: Wallet, label: "Wallet" }, // Wallet
-  { href: "/user/chats", icon: MessageSquare, label: "Chats" }, // MessageSquare
+
+type NavItem = {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+};
+
+const navItems: NavItem[] = [
+  { title: "Dashboard", href: "/user", icon: Home },
+  { title: "Profile", href: "/user/profile", icon: User },
+  { title: "Sessions", href: "/user/sessions", icon: Clock },
+  { title: "Chats", href: "/user/chats", icon: MessageSquare },
+  { title: "Change Password", href: "/user/change-password", icon: Key },
+  { title: "Wallet", href: "/user/wallet", icon: Wallet },
 ];
 
-export function DashboardSidebar() {
+export default function Sidebar() {
   const pathname = usePathname();
-
- const { data: session } = useSession();
-
-  if (!session) {
-    return null;
-  }
-
+  const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <>
-      <SidebarHeader className="border-b p-4 mt-20">
-        <motion.div
-          className="flex items-center space-x-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Avatar>
-         <AvatarImage
-            src={session?.user?.image || "/dux.png"}
-            alt="User avatar"
-            onError={(e) => (e.currentTarget.src = "/dux.png")} // Fallback on error
-          />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
-          <div className="space-y-1">
-            <h2 className="text-sm font-semibold">{session?.user?.name??"USER"}</h2>
-            <p className="text-xs text-muted-foreground">{session?.user?.email??"john@example.com"}</p>
+    <ShadcnSidebar>
+      <SidebarHeader className="p-4">
+        <DUX />
+
+{/* 
+        {session?.user && (
+          <div className="flex items-center space-x-4 mb-4">
+            <Avatar>
+              <AvatarImage src={session.user.image || undefined} />
+              <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-sm font-medium">{session.user.name}</p>
+              <p className="text-xs text-muted-foreground">{session.user.email}</p>
+            </div>
           </div>
-        </motion.div>
+        )} */}
+
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarMenu>
-          {menuItems.map((item, index) => (
-            <motion.div
-              key={item.href}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === item.href}>
-                  <Link href={item.href} className="flex items-center">
-                    <item.icon className="mr-2 h-4 w-4" />
-                    <span>{item.label}</span>
-                    {item.label === "User" && (
-                      <Badge variant="secondary" className="ml-auto">
-                        New
-                      </Badge>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <SidebarMenuItem key={item.href}>
+                <Link href={item.href} passHref legacyBehavior>
+                  <SidebarMenuButton asChild className={`relative ${isActive ? "bg-primary/10 rounded-md" : ""}`}>
+                    <a className="flex items-center gap-2">
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </Link>
+                {isActive && (
+                  <motion.div
+                    className="absolute inset-0 z-10 bg-primary/10 rounded-md"
+                    layoutId="sidebar-highlight"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  />
+                )}
               </SidebarMenuItem>
-            </motion.div>
-          ))}
+            );
+          })}
         </SidebarMenu>
       </SidebarContent>
-    </>
+      <SidebarFooter className="p-4">
+        {session ? (
+          <Button onClick={() => signOut()} className="w-full">
+            Sign Out
+          </Button>
+        ) : (
+          <Link href="/login" passHref legacyBehavior>
+            <Button asChild className="w-full">
+              <a>Sign In</a>
+            </Button>
+          </Link>
+        )}
+      </SidebarFooter>
+    </ShadcnSidebar>
   );
 }

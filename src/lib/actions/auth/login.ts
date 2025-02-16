@@ -2,7 +2,7 @@
 import "server-only";
 
 import * as z from "zod";
-import { LoginSchema } from "@/validator/authforms";
+import { LoginSchema } from "@/utils/validator/authforms";
 
 import { AuthError } from "next-auth";
 

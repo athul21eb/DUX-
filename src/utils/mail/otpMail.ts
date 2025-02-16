@@ -2,7 +2,7 @@
 import 'server-only'
 import { Resend } from "resend";
 import { z } from 'zod';
-import { ForgotPasswordSchema } from '@/validator/authforms';
+import { ForgotPasswordSchema } from '@/utils/validator/authforms';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

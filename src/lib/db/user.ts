@@ -1,12 +1,16 @@
 import { database } from "./database";
 
-interface UserData {
+export interface UserData {
   name?: string;
   email: string;
   password?: string;
   image?: string;
   emailVerified?: Date;
+  dob?: Date;       // Optional Date of Birth
+  phone?: string;   // Optional Phone Number
+  gender?: string;  // Optional Gender
 }
+
 
 // Create a new user
 export const createUser = async (data: UserData) => {
@@ -104,4 +108,36 @@ export const changePasswordByEmail = async (email: string, password: string) => 
     return null;
   }
 };
-12
+
+//// get user details without id
+
+
+export const getUserWithoutIDByEmail = async (email: string) => {
+  try {
+    const user = await database.user.findUnique({
+      where: { email },
+      select: {
+        name: true,
+        email: true,
+        phone: true,
+        gender: true,
+        dob: true,
+        image: true,
+      },
+    });
+
+    return user
+      ? {
+          name: user.name || "",
+          email: user.email || "",
+          phone: user.phone || "",
+          gender: user.gender || "",
+          dob: user.dob ? new Date(user.dob) : undefined,
+          image: user.image || "",
+        }
+      : null;
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
+    return null;
+  }
+};

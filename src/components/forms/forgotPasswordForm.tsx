@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { ForgotPasswordSchema } from "@/validator/authforms";
+import { ForgotPasswordSchema } from "@/utils/validator/authforms";
 import VerifyEmailAndSendOtp, {
   changePasswordAction,
   verifyOtp,
@@ -154,7 +154,7 @@ export default function ForgotPasswordForm() {
                 <FormControl>
                   {/* <Input {...field} type="password" placeholder="Enter OTP" /> */}
                  <div className="flex w-full justify-center items-center">
-                  
+
                  <InputOTP maxLength={6} {...field} >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />

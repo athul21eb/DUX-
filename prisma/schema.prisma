@@ -14,6 +14,9 @@ model User {
   emailVerified DateTime?
   password      String?         @db.VarChar(72)
   image         String?
+  dob           DateTime? // Optional Date of Birth
+  phone         String? // Optional Phone Number
+  gender        String? // Optional Gender12
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -44,8 +47,6 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
-
-
 model VerificationToken {
   id      String   @id @default(uuid())
   email   String
@@ -61,11 +62,9 @@ model OTP {
   email     String
   createdAt DateTime @default(now())
   expiresAt DateTime
-  
 
-  @@index([email,token]) // Index on email for faster lookups
+  @@index([email, token]) // Index on email for faster lookups
 }
-
 
 model Session {
   sessionToken String   @unique
@@ -76,6 +75,7 @@ model Session {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 // Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique

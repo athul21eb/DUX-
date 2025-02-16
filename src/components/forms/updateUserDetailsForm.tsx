@@ -2,12 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -20,27 +14,25 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import Image from "next/image";
-// import { updateUser } from "@/lib/actions/user";
 import { CardWrapper } from "../shared/cardWrapper";
 import { DatePicker } from "@/components/ui/date-picker";
 import toast from "react-hot-toast";
-
-const UserSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email"),
-  phone: z.string().optional(),
-  gender: z.enum(["Male", "Female", "Other"]).optional(),
-  dob: z.date().optional(),
-  image: z.string().optional(),
-});
-
-type UserFormValues = z.infer<typeof UserSchema>;
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; // Import Shadcn Avatar components
+import { UpdateUserProfileAction } from "@/lib/actions/user/updateProfile";
+import { UserFormValues, UserSchema } from "@/utils/validator/userformupdate";
 
 export function UserProfileForm({ user }: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>(user?.image || "");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imageError, setImageError] = useState<boolean>(false); // State for image loading error
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(UserSchema),
@@ -48,7 +40,7 @@ export function UserProfileForm({ user }: any) {
       name: user?.name || "",
       email: user?.email || "",
       phone: user?.phone || "",
-      gender: user?.gender || "Other",
+      gender: user?.gender || "",
       dob: user?.dob ? new Date(user.dob) : undefined,
       image: user?.image || "",
     },
@@ -59,28 +51,92 @@ export function UserProfileForm({ user }: any) {
     if (file) {
       setSelectedImage(file);
       setImagePreview(URL.createObjectURL(file));
+
+      setImageError(false); // Reset error state on new image selection
     }
   };
 
+  const handleImageError = () => {
+    setImageError(true); // Set error state if image fails to load
+  };
   const onSubmit = async (data: UserFormValues) => {
-    console.log(data);
-    toast.success("Profile updated successfully");
+    try {
+      setLoading(true);
+      console.log("Form submitted", data);
+      await UpdateUserProfileAction(data, selectedImage)
+        .then((res) => {
+          setLoading(false);
+          if (res.success) {
+            toast.success(res.message);
+          } else {
+            toast.error(res.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error changing password:", error);
+
+          toast.error("Failed to change password");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast.error("Failed to update profile");
+    }
   };
 
   return (
     <CardWrapper title="User Profile" description="Manage your profile details">
-      <div className="flex flex-col items-center mb-4">
-        <Image
-          src={(selectedImage ? imagePreview : selectedImage) || "/default-avatar.png"}
-          width={100}
-          height={100}
-          className="rounded-full border"
-          alt="User Avatar"
+      <div className="flex flex-col items-center ">
+        <div className="relative w-24 h-24">
+          <Avatar className="w-24 h-24">
+            <AvatarImage
+              src={imagePreview}
+              alt="User Avatar"
+              onError={handleImageError} // Handle image loading errors
+            />
+            <AvatarFallback>
+              {user?.name?.charAt(0) || "U"}{" "}
+              {/* Fallback to user's initial or "U" */}
+            </AvatarFallback>
+          </Avatar>
+          <label
+            htmlFor="image-upload"
+            className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-1 cursor-pointer hover:bg-blue-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </label>
+        </div>
+        <input
+          id="image-upload"
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="hidden"
         />
-        <input type="file" accept="image/*" onChange={handleImageChange} className="mt-2" />
+        {imageError && (
+          <p className="text-sm text-red-500 mt-2">
+            Failed to load image. Please try again.
+          </p>
+        )}
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -88,7 +144,7 @@ export function UserProfileForm({ user }: any) {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="John Doe" />
+                  <Input {...field} placeholder="John Doe" className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -101,7 +157,13 @@ export function UserProfileForm({ user }: any) {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="johndoe@email.com" type="email" disabled />
+                  <Input
+                    {...field}
+                    placeholder="johndoe@email.com"
+                    type="email"
+                    disabled
+                    className="w-full"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,7 +176,12 @@ export function UserProfileForm({ user }: any) {
               <FormItem>
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="123-456-7890" type="tel" />
+                  <Input
+                    {...field}
+                    placeholder="123-456-7890"
+                    type="tel"
+                    className="w-full"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,9 +193,18 @@ export function UserProfileForm({ user }: any) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Male/Female/Other" />
-                </FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -140,14 +216,22 @@ export function UserProfileForm({ user }: any) {
               <FormItem>
                 <FormLabel>Date of Birth</FormLabel>
                 <FormControl>
-                  <DatePicker selected={field.value} onChange={field.onChange} placeholderText="Select date" />
+                  <DatePicker
+                    selected={field.value}
+                    onChange={(date) => field.onChange(date)}
+                    placeholderText="Select date"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="col-span-1 md:col-span-2 flex justify-end">
-            <Button type="submit" className="w-full md:w-auto" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full md:w-auto"
+              disabled={loading}
+            >
               {loading ? "Updating..." : "Update Profile"}
             </Button>
           </div>

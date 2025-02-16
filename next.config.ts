@@ -2,6 +2,12 @@ import { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig:NextConfig = {
+
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb", // Increase the limit (adjust as needed)
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -9,6 +15,7 @@ const nextConfig:NextConfig = {
         hostname: "lh3.googleusercontent.com",
       },
     ],
+
   },
 };
 

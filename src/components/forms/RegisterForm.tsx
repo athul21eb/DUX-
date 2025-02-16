@@ -15,7 +15,7 @@ import DUX from "../ui/Dux";
 import { Link } from "next-view-transitions";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { RegisterSchema } from "@/validator/authforms";
+import { RegisterSchema } from "@/utils/validator/authforms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { register } from "@/lib/actions/auth/register";
@@ -57,7 +57,7 @@ export default function RegisterForm() {
 
   return (
     <div className={"flex flex-col gap-6"}>
-  
+
          <CardWrapper title={<DUX />} description="Create an Account">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

@@ -20,11 +20,12 @@ function AllProviders({ children }: { children: React.ReactNode }) {
       <ViewTransitions>
         <SessionProvider>{children}</SessionProvider>
         <Toaster
-          position="bottom-right"
-          toastOptions={{
-            className: "dark:bg-black dark:text-white shadow-lg rounded-lg ",
-          }}
-        />
+  position="top-center"
+  toastOptions={{
+    className: "bg-popover text-popover-foreground border border-border shadow-lg rounded-lg",
+  }}
+/>
+
       </ViewTransitions>
       </SidebarProvider>
     </ThemeProvider>

@@ -2,13 +2,14 @@
 
 import "server-only";
 import bcrypt from "bcryptjs";
-import { RegisterSchema } from "@/validator/authforms";
+import { RegisterSchema } from "@/utils/validator/authforms";
 import * as z from "zod";
 
-import { generateVerificationToken } from "@/lib/token/token";
+
 import { createUser, getUserByEmail } from "@/lib/db/user";
 import { revalidatePath } from "next/cache";
-import { sendVerificationEmail } from "@/lib/mail/verificationMail";
+import { sendVerificationEmail } from "@/utils/mail/verificationMail";
+import { generateVerificationToken } from "@/utils/token/token";
 
 // import { generateVerificationToken } from "@/lib/token";
 // import { sendVerificationEmail } from "@/lib/mail";

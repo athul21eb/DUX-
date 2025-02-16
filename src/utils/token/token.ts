@@ -1,11 +1,8 @@
+import { createVerificationToken, deleteVerificationToken, getVerificationTokenByEmail } from "@/lib/db/verification_token";
 import "server-only";
 import { v4 as uuidv4 } from "uuid";
 
-import {
-  createVerificationToken,
-  deleteVerificationToken,
-  getVerificationTokenByEmail,
-} from "../db/verification_token";
+
 
 export const generateVerificationToken = async (email: string) => {
   // Generate a random token

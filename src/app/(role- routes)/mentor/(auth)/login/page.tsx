@@ -1,7 +1,8 @@
+import React from 'react'
 
 function page() {
   return (
-    <div>page  12</div>
+    <div>page</div>
   )
 }
 
