@@ -1,3 +1,6 @@
+
+
+
 import { PrismaClient } from "@prisma/client";
 import { database } from "./database";
 
@@ -29,6 +32,30 @@ class SkillService {
       return null;
     }
   }
+
+  async getSkillsWithPagination(skip: number, limit: number) {
+    try {
+      return await this.prisma.skill.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" }, // Sort by latest created skill
+      });
+    } catch (error) {
+      console.error("Error fetching paginated skills:", error);
+      return null; // Return null to indicate failure
+    }
+  }
+
+  // ✅ Get total skill count (with error handling)
+  async getTotalSkillCount() {
+    try {
+      return await this.prisma.skill.count();
+    } catch (error) {
+      console.error("Error fetching total skill count:", error);
+      return 0; // Return 0 to indicate failure
+    }
+  }
+
 
   // Get a skill by ID with error handling
   async getSkillById(skillId: string) {
