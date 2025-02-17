@@ -27,13 +27,14 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; // Import Shadcn Avatar components
 import { UpdateUserProfileAction } from "@/lib/actions/user/updateProfile";
 import { UserFormValues, UserSchema } from "@/utils/validator/userformupdate";
+import { getSession, useSession } from "next-auth/react";
 
 export function UserProfileForm({ user }: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>(user?.image || "");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageError, setImageError] = useState<boolean>(false); // State for image loading error
-
+  const { data: session, update } = useSession();
   const form = useForm<UserFormValues>({
     resolver: zodResolver(UserSchema),
     defaultValues: {
@@ -48,13 +49,21 @@ export function UserProfileForm({ user }: any) {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        // File size is greater than 10MB
+        
+        toast.error("Please select an image less than 10MB.");
+        return;
+      }
+
       setSelectedImage(file);
       setImagePreview(URL.createObjectURL(file));
-
       setImageError(false); // Reset error state on new image selection
     }
   };
+
 
   const handleImageError = () => {
     setImageError(true); // Set error state if image fails to load
@@ -63,26 +72,31 @@ export function UserProfileForm({ user }: any) {
     try {
       setLoading(true);
       console.log("Form submitted", data);
-      await UpdateUserProfileAction(data, selectedImage)
-        .then((res) => {
-          setLoading(false);
-          if (res.success) {
-            toast.success(res.message);
-          } else {
-            toast.error(res.message);
-          }
-        })
-        .catch((error) => {
-          console.error("Error changing password:", error);
 
-          toast.error("Failed to change password");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      const res = await UpdateUserProfileAction(data, selectedImage);
+
+      if (res.success) {
+        if (res.user?.name || res.user?.image) {
+          const updatedUser = {
+            ...session?.user, // Ensure session exists
+            name: res.user?.name,
+            image: res.user?.image, // Update with new image URL
+          };
+
+          await update({ user: updatedUser });
+
+          await getSession();
+        }
+
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
       console.error("Failed to update profile:", error);
       toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
     }
   };
 

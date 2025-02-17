@@ -5,7 +5,10 @@ import { uploadImage } from "@/utils/cloudinary/cloudinary";
 import { UserFormValues, UserSchema } from "@/utils/validator/userformupdate";
 import { revalidatePath } from "next/cache";
 
-export async function UpdateUserProfileAction(formData: UserFormValues, selectedImage: File | null) {
+export async function UpdateUserProfileAction(
+  formData: UserFormValues,
+  selectedImage: File | null
+) {
   try {
     const validData = UserSchema.parse(formData);
 
@@ -49,13 +52,25 @@ export async function UpdateUserProfileAction(formData: UserFormValues, selected
     }
 
     // Update the user if changes are detected
-  const updated =   await updateUser(user.id, { name, phone, gender, dob, image: imageUrl ?? undefined });
+    const updatedUser = await updateUser(user.id, {
+      name,
+      phone,
+      gender,
+      dob,
+      image: imageUrl ?? undefined,
+    });
 
     // Revalidate the profile page
     revalidatePath("/profile");
 
-    return { success: true, message: "Profile updated successfully" };
-
+    return {
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        name: updatedUser?.name,
+        image: imageUrl,
+      },
+    };
   } catch (error) {
     console.error("Error in UpdateUserProfileAction:", error);
     return { success: false, message: "Something went wrong" };

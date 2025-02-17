@@ -56,7 +56,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className={"flex flex-col gap-6"}>
+    <div className={"flex flex-col gap-6 w-full"}>
 
          <CardWrapper title={<DUX />} description="Create an Account">
           <Form {...form}>

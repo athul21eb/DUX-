@@ -42,7 +42,7 @@ export default  function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full `}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased  `}
       >
         <AllProviders>{children}
         { modal} {/* Ensures the modal slot is rendered */}

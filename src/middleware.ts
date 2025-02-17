@@ -6,46 +6,48 @@ import type { NextRequest } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
-export default auth(async (req: NextRequest) => {
+// Role-based route access mapping
+const protectedRoutes: Record<string, string> = {
+  "/mentor": "mentor",
+  "/user": "user",
+  "/admin": "admin",
+};
 
-
-  // Get encrypted token from cookies
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-
-  console.log("Middleware:", req.nextUrl.pathname,"    Role=>",token?.role);
-  // Extract user role from token or default to 'guest'
-  const role: string = token?.role ?? "guest";
-  const isAuthenticated = !!token;
-
-  // Role-based route protection
-  const protectedRoutes: Record<string, string> = {
-    "/mentor": "mentor",
-    "/user": "user",
-    "/admin": "admin",
-  };
-
+// Function to check role access
+const hasAccess = (pathname: string, role: string): boolean => {
   for (const route in protectedRoutes) {
-    if (req.nextUrl.pathname.startsWith(route) && role !== protectedRoutes[route]) {
-      return NextResponse.redirect(new URL("/", req.nextUrl)); // Redirect unauthorized users
+    if (pathname.startsWith(route + "/") || pathname === route) {
+      return role === protectedRoutes[route];
     }
   }
+  return true; // Default to allowing access
+};
 
-  // Restrict access to /register-as-mentor for users who are not 'user'
-  if (req.nextUrl.pathname === "/register-as-mentor" && role === "user") {
-    return NextResponse.next();
-  } else if (req.nextUrl.pathname === "/register-as-mentor") {
+// Middleware function
+export default auth(async (req: NextRequest) => {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const role: string = token?.role ?? "guest";
+  const isAuthenticated = !!token;
+  const { pathname } = req.nextUrl;
+
+  console.log("Middleware:", pathname, "Role =>", role);
+
+  if (pathname === "/register-as-mentor" && role !== "user") {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  // Prevent authenticated users from accessing /login and /signup
-  if (isAuthenticated && ["/login", "/signup"].includes(req.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/", req.nextUrl)); // Redirect to home if already logged in
+  if (!hasAccess(pathname, role)) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  return NextResponse.next(); // Allow access if authorized
+  if (isAuthenticated && ["/login", "/signup"].includes(pathname)) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
+
+  return NextResponse.next();
 });
 
-// Apply middleware to all routes
+// Apply middleware to relevant routes
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

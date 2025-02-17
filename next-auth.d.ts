@@ -6,6 +6,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: string;
+      image:string;
     } & DefaultSession["user"]; // Fix: Ensures `user` properties are merged correctly
   }
 
@@ -17,5 +18,6 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     role: string;
+    image:string;
   }
 }

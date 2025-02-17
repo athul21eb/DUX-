@@ -16,6 +16,7 @@ export const {
   handlers: { GET, POST },
   signIn,
   signOut,
+
 } = NextAuth({
 
   ...authConfig,
@@ -68,6 +69,7 @@ export const {
 
       token.name = existingUser.name;
       token.email = existingUser.email;
+      token.image = existingUser.image as string;
       token.role = existingUser.role as string; // Ensure a default role is assigned
       token.isOAuth = !existingUser.password;
 
@@ -81,6 +83,7 @@ export const {
           ...session.user,
           id: token.sub,
           isOAuth: token.isOAuth,
+          image:token.image as string,
           role: token.role as string, // Ensure a default role
         },
       };

@@ -6,9 +6,8 @@ import { ThemeProvider } from "../ui/ThemeProvider";
 import { ViewTransitions } from "next-view-transitions";
 import { SessionProvider } from "next-auth/react";
 import { SidebarProvider } from "../ui/sidebar";
+
 function AllProviders({ children }: { children: React.ReactNode }) {
-
-
   return (
     <ThemeProvider
       attribute="class"
@@ -17,17 +16,25 @@ function AllProviders({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       <SidebarProvider defaultOpen={true}>
-      <ViewTransitions>
-        <SessionProvider>{children}</SessionProvider>
-        <Toaster
-  position="top-center"
+        <SessionProvider>
+          <ViewTransitions>{children}</ViewTransitions>
+        </SessionProvider>
+      </SidebarProvider>
+
+      {/* Toaster should be outside of ViewTransitions to persist */}
+      <Toaster
+  position="bottom-right"
   toastOptions={{
-    className: "bg-popover text-popover-foreground border border-border shadow-lg rounded-lg",
+    style: {
+      background: "black",
+      color: "white",
+      border: "1px solid #333",
+      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+      borderRadius: "8px",
+    },
   }}
 />
 
-      </ViewTransitions>
-      </SidebarProvider>
     </ThemeProvider>
   );
 }

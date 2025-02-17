@@ -2,7 +2,7 @@ import DUX from "@/components/ui/Dux";
 
 const LoadingFullScreen = () => {
   return (
-    <div className=" h-svh flex flex-col items-center justify-center bg-background ">
+    <div className=" h-svh flex flex-col items-center justify-center bg-background w-full">
       {/* Logo */}
       <DUX />
 

@@ -8,6 +8,10 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+		container: {
+      center: true,
+      padding: "1rem", // Ensure padding inside the container
+    },
   	extend: {
   		keyframes: {
   			'caret-blink': {

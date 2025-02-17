@@ -15,7 +15,7 @@ export default function MentorsPage() {
               <h1 className="text-4xl font-bold tracking-tight">
                 Explore Our Expert Mentors
               </h1>
-              <Link href="/mentor/signup">< Button > Register As Mentor</Button></Link>
+              <Link href="/register-as-mentor">< Button > Register As Mentor</Button></Link>
             </div>
             <p className="text-muted-foreground max-w-3xl">
               Our team of expert mentors is committed to offering personalized

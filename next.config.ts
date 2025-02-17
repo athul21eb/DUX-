@@ -1,21 +1,23 @@
 import { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
-const nextConfig:NextConfig = {
-
+const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb", // Increase the limit (adjust as needed)
+      bodySizeLimit: "30mb", // Increase the limit (adjust as needed)
     },
   },
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "lh3.googleusercontent.com",
+        hostname: "lh3.googleusercontent.com", // Google profile images
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com", // Cloudinary images
       },
     ],
-
   },
 };
 

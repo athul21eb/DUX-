@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -15,13 +14,17 @@ model User {
   emailVerified DateTime?
   password      String?   @db.VarChar(72)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
   dob           DateTime?
   gender        String?
-  phone         String?
-  role          String    @default("user")
+  phone         String?   
+  role          String    @default("user") // Can be 'user', 'mentor', 'admin'
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   accounts      Account[]
+  mentorProfile Mentor?
+
+  @@index([email])
+  @@index([phone])
 }
 
 model Account {
@@ -61,3 +64,54 @@ model OTP {
 
   @@index([email, token])
 }
+
+model Mentor {
+  id      String   @id @default(uuid())
+  userId  String   @unique
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio     String?
+  skills  MentorSkill[] // Many-to-Many relation through a junction table
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Skill {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  description String?
+
+  mentors MentorSkill[] // Relation through a junction table
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Junction Table for Mentor-Skill Many-to-Many Relation
+model MentorSkill {
+  mentorId String
+  skillId  String
+
+  mentor   Mentor @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  skill    Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([mentorId, skillId]) // Composite primary key
+}
+
+
+// model Booking {
+//   id         String   @id @default(uuid())
+//   mentorId   String
+//   userId     String
+//   date       DateTime
+//   duration   Int      // Duration in minutes
+//   status     String   @default("pending") // 'pending', 'confirmed', 'canceled', 'completed'
+//   createdAt  DateTime @default(now())
+//   updatedAt  DateTime @updatedAt
+
+//   mentor     Mentor   @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+//   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@index([mentorId])
+//   @@index([userId])
+// }
