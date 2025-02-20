@@ -1,8 +1,6 @@
-
-
-
 import { PrismaClient } from "@prisma/client";
 import { database } from "./database";
+import { Skill } from "@/types/skills";
 
 class SkillService {
   private prisma: PrismaClient;
@@ -12,7 +10,7 @@ class SkillService {
   }
 
   // Create a new skill with error handling
-  async createSkill(name: string, description?: string) {
+  async createSkill(name: string, description?: string): Promise<Skill | null> {
     try {
       return await this.prisma.skill.create({
         data: { name, description },
@@ -24,7 +22,7 @@ class SkillService {
   }
 
   // Get all skills with error handling
-  async getAllSkills() {
+  async getAllSkills(): Promise<Skill[] | null> {
     try {
       return await this.prisma.skill.findMany();
     } catch (error) {
@@ -33,7 +31,10 @@ class SkillService {
     }
   }
 
-  async getSkillsWithPagination(skip: number, limit: number) {
+  async getSkillsWithPagination(
+    skip: number,
+    limit: number
+  ): Promise<Skill[] | null> {
     try {
       return await this.prisma.skill.findMany({
         skip,
@@ -47,7 +48,7 @@ class SkillService {
   }
 
   // ✅ Get total skill count (with error handling)
-  async getTotalSkillCount() {
+  async getTotalSkillCount(): Promise<number> {
     try {
       return await this.prisma.skill.count();
     } catch (error) {
@@ -56,9 +57,8 @@ class SkillService {
     }
   }
 
-
   // Get a skill by ID with error handling
-  async getSkillById(skillId: string) {
+  async getSkillById(skillId: string): Promise<Skill | null> {
     try {
       return await this.prisma.skill.findUnique({
         where: { id: skillId },
@@ -70,7 +70,11 @@ class SkillService {
   }
 
   // Update a skill with error handling
-  async updateSkill(skillId: string, name?: string, description?: string) {
+  async updateSkill(
+    skillId: string,
+    name?: string,
+    description?: string
+  ): Promise<Skill | null> {
     try {
       return await this.prisma.skill.update({
         where: { id: skillId },
@@ -83,7 +87,7 @@ class SkillService {
   }
 
   // Delete a skill with error handling
-  async deleteSkill(skillId: string) {
+  async deleteSkill(skillId: string): Promise<Skill | null> {
     try {
       return await this.prisma.skill.delete({
         where: { id: skillId },
@@ -96,4 +100,3 @@ class SkillService {
 }
 
 export const skillService = new SkillService(database);
-

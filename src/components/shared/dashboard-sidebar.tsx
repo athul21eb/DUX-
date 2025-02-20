@@ -78,7 +78,7 @@ export default function Sidebar() {
   const handleSignOut = async () => {
     const toastId = toast.loading("Logging out...");
     try {
-      await signOut();
+      await signOut({redirectTo:"/"});
       toast.success("Logged out successfully!", {
         id: toastId,
         duration: 2000,

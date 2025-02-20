@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +15,9 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { createSkill, deleteSkill, getAllSkills, updateSkill } from "@/lib/actions/admin/skillsManagement/skillsManagementActions";
+import { Skill } from "@/types/skills";
+import toast from "react-hot-toast";
 
 // Generic reusable components first
 // ---------------------------------
@@ -159,7 +162,7 @@ const skillSchema = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-type Skill = z.infer<typeof skillSchema>;
+//  z.infer<typeof skillSchema>;
 
 // Form Dialog for adding/editing skills
 interface FormDialogProps<T> {
@@ -199,24 +202,41 @@ function FormDialog<T>({
   );
 }
 
-// Main SkillManagement Component
-const SkillManagement = () => {
+const SkillManagement = ({
+  initialSkills,
+  totalPages: initialTotalPages,
+  currentPage: initialCurrentPage,
+}: {
+  initialSkills: Skill[];
+  totalPages: number;
+  currentPage: number;
+}) => {
   const headers = ["Skill Name", "Description", "Actions"];
-  const [skills, setSkills] = useState<Skill[]>([
-    { id: "1", name: "JavaScript", description: "Programming language for web development" },
-    { id: "2", name: "React", description: "JavaScript library for building UIs" },
-    { id: "3", name: "Node.js", description: "Runtime for executing JavaScript on the server" },
-  ]);
-  const [currentPage, setCurrentPage] = useState(1);
+ const [skills, setSkills] = useState<Skill[]>(initialSkills??[]);
+  const [totalPages, setTotalPages] = useState<number>(initialTotalPages??1);
+  const [currentPage, setCurrentPage] = useState<number>(initialCurrentPage??1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState<Skill | null>(null);
 
   const itemsPerPage = 5;
-  const pageCount = Math.ceil(skills.length / itemsPerPage);
-  const paginatedSkills = skills.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const form = useForm<Skill>({
+  const fetchSkills = async () => {
+    const result = await getAllSkills(currentPage, itemsPerPage);
+    if (result.success) {
+      setSkills(result.data.skills);
+      setTotalPages(result.data.totalPages);
+    }
+  };
+   // Fetch skills when page changes
+   useEffect(() => {
+
+
+    fetchSkills();
+  }, [currentPage]); // When currentPage changes, fetch skills
+
+
+  const form = useForm<z.infer<typeof skillSchema>>({
     resolver: zodResolver(skillSchema),
     defaultValues: {
       name: "",
@@ -227,7 +247,10 @@ const SkillManagement = () => {
   // Event handlers
   const handleEdit = (skill: Skill) => {
     setCurrentSkill(skill);
-    form.reset(skill);
+    form.reset({
+      ...skill,
+      description: skill.description ?? "", // Convert null to empty string
+    });
     setDialogOpen(true);
   };
 
@@ -236,31 +259,65 @@ const SkillManagement = () => {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (currentSkill) {
-      setSkills(skills.filter(s => s.id !== currentSkill.id));
-      setDeleteDialogOpen(false);
+      const result = await deleteSkill(currentSkill.id);
+      if (result.success) {
+        setSkills(skills.filter(s => s.id !== currentSkill.id));
 
-      // Adjust page if we delete the last item on a page
-      const newPageCount = Math.ceil((skills.length - 1) / itemsPerPage);
-      if (currentPage > newPageCount && newPageCount > 0) {
-        setCurrentPage(newPageCount);
+        setDeleteDialogOpen(false);
+
+        // Adjust page if we delete the last item on a page
+        const newPageCount = Math.ceil((skills.length - 1) / itemsPerPage);
+        if (currentPage > newPageCount && newPageCount > 0) {
+          setCurrentPage(newPageCount);
+        }
+      } else {
+        console.error(result.message);
       }
     }
   };
 
-  const onSubmit = (data: Skill) => {
+
+
+  const onSubmit = async (data: Skill) => {
+    let result:any;
+
+
     if (currentSkill?.id) {
       // Edit existing skill
-      setSkills(skills.map(s => s.id === currentSkill.id ? { ...data, id: currentSkill.id } : s));
+      result = await updateSkill({ ...data, id: currentSkill.id });
+      if (result.success) {
+        // Update the skill in the state without duplicating
+        setSkills(skills.map(skill => skill.id === currentSkill.id ? result.data : skill));
+
+        toast.success(result.message);
+      }
     } else {
       // Add new skill
-      setSkills([...skills, { ...data, id: String(Date.now()) }]);
+      result = await createSkill(data);
+      if (result.success) {
+        // Add the new skill to the state
+        setSkills(prevSkills => [...prevSkills, result?.data]);
+
+        toast.success(result.message);
+      }
     }
-    form.reset();
-    setDialogOpen(false);
-    setCurrentSkill(null);
+
+    if (result.success) {
+      // Reset form and close the dialog
+      form.reset();
+      setDialogOpen(false);
+      setCurrentSkill(null);
+
+      // Revalidate path to fetch updated data
+      // router.replace(router.asPath); // This forces a re-fetch of data for the current page without changing the URL
+    } else {
+      console.error(result.message);
+      toast.error(result.message);
+    }
   };
+
 
   const openNewSkillDialog = () => {
     form.reset({ name: "", description: "" });
@@ -338,14 +395,14 @@ const SkillManagement = () => {
       {/* Use our reusable data table component */}
       <ReusableDataTable
         headers={headers}
-        rows={paginatedSkills}
+        rows={skills}
         renderRow={renderSkillRow}
       />
 
       {/* Use our reusable pagination component */}
       <PaginationComponent
         currentPage={currentPage}
-        pageCount={pageCount}
+        pageCount={totalPages}
         onPageChange={setCurrentPage}
       />
 

@@ -2,9 +2,15 @@ import { FilterSidebar } from "@/components/shared/filter-sidebar";
 import MentorGrid from "@/components/shared/mentor-grid";
 import { SearchBar } from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
+import { getAllUsersWithPagination } from "@/lib/db/user";
 import { Link } from "next-view-transitions";
 
-export default function MentorsPage() {
+export default async function MentorsPage() {
+
+   const result = await getAllUsersWithPagination(1,5,"mentor");
+
+   console.log(result);
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-8">
@@ -27,7 +33,7 @@ export default function MentorsPage() {
           <SearchBar />
           <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
             <FilterSidebar />
-            <MentorGrid />
+            <MentorGrid mentors={result?.users??[]}/>
           </div>
         </div>
       </main>

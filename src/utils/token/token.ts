@@ -1,5 +1,5 @@
 import { createVerificationToken, deleteVerificationToken, getVerificationTokenByEmail } from "@/lib/db/verification_token";
-import "server-only";
+
 import { v4 as uuidv4 } from "uuid";
 
 

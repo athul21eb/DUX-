@@ -7,4 +7,3 @@ export const skillSchema = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-export type Skill = z.infer<typeof skillSchema>;

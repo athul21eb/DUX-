@@ -72,6 +72,7 @@ export const {
       token.image = existingUser.image as string;
       token.role = existingUser.role as string; // Ensure a default role is assigned
       token.isOAuth = !existingUser.password;
+      token.isBlocked = existingUser.isBlocked as boolean;
 
       return token;
     },
@@ -84,7 +85,8 @@ export const {
           id: token.sub,
           isOAuth: token.isOAuth,
           image:token.image as string,
-          role: token.role as string, // Ensure a default role
+          role: token.role as string,
+          isBlocked:token.isBlocked as boolean // Ensure a default role
         },
       };
     },

@@ -25,12 +25,23 @@ const hasAccess = (pathname: string, role: string): boolean => {
 
 // Middleware function
 export default auth(async (req: NextRequest) => {
+  
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const role: string = token?.role ?? "guest";
+  const isBlocked :boolean = token?.isBlocked as boolean;
+
   const isAuthenticated = !!token;
   const { pathname } = req.nextUrl;
 
-  console.log("Middleware:", pathname, "Role =>", role);
+  console.log("Middleware:", pathname, "Role =>", role, "Blocked =>", isBlocked);
+
+  if (pathname.startsWith("/api/auth")) {
+    return NextResponse.next();
+  }
+
+  if (isBlocked && pathname !== "/blocked") {
+    return NextResponse.redirect(new URL("/blocked", req.nextUrl));
+  }
 
   if (pathname === "/register-as-mentor" && role !== "user") {
     return NextResponse.redirect(new URL("/login", req.nextUrl));

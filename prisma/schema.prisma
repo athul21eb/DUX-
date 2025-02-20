@@ -12,11 +12,12 @@ model User {
   name          String?
   email         String    @unique
   emailVerified DateTime?
+   isBlocked     Boolean   @default(false)  // Corrected the typo here
   password      String?   @db.VarChar(72)
   image         String?
   dob           DateTime?
   gender        String?
-  phone         String?   
+  phone         String?
   role          String    @default("user") // Can be 'user', 'mentor', 'admin'
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -24,7 +25,7 @@ model User {
   mentorProfile Mentor?
 
   @@index([email])
-  @@index([phone])
+
 }
 
 model Account {
@@ -66,16 +67,43 @@ model OTP {
 }
 
 model Mentor {
-  id      String   @id @default(uuid())
-  userId  String   @unique
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio     String?
-  skills  MentorSkill[] // Many-to-Many relation through a junction table
-
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills      MentorSkill[]  // Many-to-Many relation through a junction table
+  documents   String[]  // Array of file paths or URLs for uploaded documents
+  aboutMe     String?  // Short description or bio
+  experiences Experience[]  // Array of experiences, could be a JSON object or structured data
+  educations  Education[]  // Array of educational details, could be a JSON object or structured data
+  languages   String[]  // Array of languages spoken
+  verified    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Experience {
+  id          String   @id @default(uuid())
+  mentorId    String
+  role        String
+  company     String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+
+  mentor Mentor @relation(fields: [mentorId], references: [id])
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  mentorId    String
+  degree      String
+  institution String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+
+  mentor Mentor @relation(fields: [mentorId], references: [id])
+}
 model Skill {
   id      String   @id @default(uuid())
   name    String   @unique

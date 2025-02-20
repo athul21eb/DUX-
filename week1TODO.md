@@ -99,21 +99,21 @@
 *   **Tasks:**
 
     *   **(9:00 AM - 12:00 PM): Role-Based Access Control (RBAC):**
-        - [ ] Add `role` field to `User` model (`USER`, `MENTOR`, `ADMIN`).  Default to `USER`.
-        - [ ] Middleware/Server Action checks for API access based on role.
-        - [ ] Example: `/api/admin/users` (ADMIN only, return 403 otherwise).
-        - [ ] Use NextAuth.js session to check role.
+        - [ x] Add `role` field to `User` model (`USER`, `MENTOR`, `ADMIN`).  Default to `USER`.
+        - [x ] Middleware/Server Action checks for API access based on role.
+        - [x ] Example: `/api/admin/users` (ADMIN only, return 403 otherwise).
+        - [x ] Use NextAuth.js session to check role.
 
     *   **(1:00 PM - 5:00 PM): Mentor List:**
-        - [ ] Create `Mentor` model (link to `User` model).
-        - [ ] Create `/mentors` page.
-        - [ ] Implement Server Action to fetch mentors (filter by `role = MENTOR`).
-        - [ ] Display mentor list (name, bio, expertise).
+        - [ x] Create `Mentor` model (link to `User` model).
+        - [ x] Create `/mentors` page.
+        - [ x] Implement Server Action to fetch mentors (filter by `role = MENTOR`).
+        - [ x] Display mentor list (name, bio, expertise).
 
     *   **(5:00 PM - 10:00 PM): Data Access Layer Enhancements:**
-        - [ ] `getMentors()`
-        - [ ] `createMentorProfile(data: MentorData)`
-        - [ ] `getUsersByRole(role: string)`
+        - [x ] `getMentors()`
+        - [ x] `createMentorProfile(data: MentorData)`
+        - [ x] `getUsersByRole(role: string)`
 
 **Day 4: Mentor Registration & Admin User Management**
 
@@ -122,9 +122,9 @@
 *   **Tasks:**
 
     *   **(9:00 AM - 1:00 PM): Register as Mentor (with Documents & OTP):**
-        - [ ] Create `/register-mentor` page (protected).
-        - [ ] Form for:
-            - [ ] Document upload (resume, certifications).  **Securely handle file uploads!** (Cloudinary/S3).
+        - [x ] Create `/register-mentor` page (protected).
+        - [ x] Form for:
+            - [ x] Document upload (resume, certifications).  **Securely handle file uploads!** (Cloudinary/S3).
             - [ ] OTP entry.
         - [ ] **Server Action:**
             - [ ] Validate form.
@@ -193,3 +193,196 @@
          - [ ] Protect API endpoints.
 *   **Monitoring:** Track performance and identify issues.
            - [ ] Track performance and identify issues.
+
+
+
+
+           aboutMe
+:
+"me is good expert  and its very best communication trainer too"
+applicationDetails
+:
+"me is good expert  and its very best communication trainer too"
+createdAt
+:
+"18/02/2025"
+documents
+:
+Array(3)
+0
+:
+"https://res.cloudinary.com/dmrvutjac/image/upload/v1739854128/ghrswjkskx88hqzum1qz.pdf"
+1
+:
+"https://res.cloudinary.com/dmrvutjac/image/upload/v1739854129/wmdrs2enzeh6jxggaozh.pdf"
+2
+:
+"https://res.cloudinary.com/dmrvutjac/image/upload/v1739854131/sirxim0exenpqxluzbzm.pdf"
+length
+:
+3
+[[Prototype]]
+:
+Array(0)
+educations
+:
+Array(1)
+0
+:
+degree
+:
+"Msc.Computer science"
+description
+:
+"its also good experience to explore the world of degree"
+endDate
+:
+"13/01/2023"
+id
+:
+"e648d1b0-0da0-4be2-9e83-eed9932b10fd"
+institution
+:
+"M G university"
+mentorId
+:
+"0a71ecf9-d582-4791-8ff2-213b973e4f19"
+startDate
+:
+"01/01/2022"
+[[Prototype]]
+:
+Object
+length
+:
+1
+[[Prototype]]
+:
+Array(0)
+email
+:
+"hope.21efootball@gmail.com"
+experiences
+:
+Array(1)
+0
+:
+company
+:
+"IBM"
+description
+:
+"its really nice experience to work in ibm company."
+endDate
+:
+"01/02/2025"
+id
+:
+"5591ec2f-9d39-4164-b614-a3b14dd81d7c"
+mentorId
+:
+"0a71ecf9-d582-4791-8ff2-213b973e4f19"
+role
+:
+"senior Devleoper"
+startDate
+:
+"10/01/2023"
+[[Prototype]]
+:
+Object
+length
+:
+1
+[[Prototype]]
+:
+Array(0)
+id
+:
+"0a71ecf9-d582-4791-8ff2-213b973e4f19"
+image
+:
+"https://res.cloudinary.com/dmrvutjac/image/upload/v1739854127/trqbitnbuabwn5ll6deu.jpg"
+languages
+:
+Array(1)
+0
+:
+"spanish"
+length
+:
+1
+[[Prototype]]
+:
+Array(0)
+mentorName
+:
+"HOPE"
+skills
+:
+Array(1)
+0
+:
+"communication"
+length
+:
+1
+[[Prototype]]
+:
+Array(0)
+updatedAt
+:
+Tue Feb 18 2025 10:18:51 GMT+0530 (India Standard Time)
+[[Prototype]]
+:
+Object
+user
+:
+createdAt
+:
+Tue Feb 18 2025 10:13:10 GMT+0530 (India Standard Time) {}
+dob
+:
+null
+email
+:
+"hope.21efootball@gmail.com"
+emailVerified
+:
+null
+gender
+:
+null
+id
+:
+"cm7a00wdw0001rgif2e3fxgt5"
+image
+:
+"https://res.cloudinary.com/dmrvutjac/image/upload/v1739854127/trqbitnbuabwn5ll6deu.jpg"
+isBlocked
+:
+false
+name
+:
+"HOPE"
+password
+:
+null
+phone
+:
+"2563147890"
+role
+:
+"user"
+updatedAt
+:
+Tue Feb 18 2025 10:18:53 GMT+0530 (India Standard Time) {}
+[[Prototype]]
+:
+Object
+userId
+:
+"cm7a00wdw0001rgif2e3fxgt5"
+verified
+:
+false

@@ -2,15 +2,19 @@ import AdminSkillManagementClient from '@/components/layouts/AdminSkillsManageme
 import { getAllSkills } from '@/lib/actions/admin/skillsManagement/skillsManagementActions'
 
 async function SkillsManagementPage() {
-
-
-  const skills = await getAllSkills(1,2)
-
-  console.log(skills);
+  // Get initial skills from the server
+  const initialData = await getAllSkills(1, 5); // Fetching the first page of skills
+  if (!initialData.success) return null;
 
   return (
-    <div><AdminSkillManagementClient /></div>
-  )
+    <div>
+      <AdminSkillManagementClient
+        initialSkills={initialData.data.skills}
+        totalPages={initialData.data.totalPages}
+        currentPage={initialData.data.currentPage}
+      />
+    </div>
+  );
 }
 
-export default SkillsManagementPage
+export default SkillsManagementPage;

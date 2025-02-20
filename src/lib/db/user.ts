@@ -1,3 +1,6 @@
+'use server'
+
+import { revalidatePath } from "next/cache";
 import { database } from "./database";
 
 export interface UserData {
@@ -49,6 +52,24 @@ export const getUserById = async (id: string) => {
       where: {
         id,
       },
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return null;
+  }
+};
+// Get user by ID
+export const getUserByIdConnectMentor = async (id: string) => {
+  try {
+    const user = await database.user.findUnique({
+      where: {
+        id,
+      },
+      include:{
+        mentorProfile:true
+      }
     });
 
     return user;
@@ -138,6 +159,63 @@ export const getUserWithoutIDByEmail = async (email: string) => {
       : null;
   } catch (error) {
     console.error("Error fetching user by email:", error);
+    return null;
+  }
+};
+
+
+export const getAllUsersWithPagination = async (page: number = 1, pageSize: number = 10,role="user") => {
+  try {
+    const skip = (page - 1) * pageSize;
+    const users = await database.user.findMany({
+      where: {
+        role: role,
+      },
+      skip,
+      take: pageSize,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        gender: true,
+        dob: true,
+        image: true,
+        role: true,
+        isBlocked:true
+      },
+    });
+
+    const totalUsers = await database.user.count({
+      where: {
+        role: 'user',
+      },
+    });
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
+    return {
+      users,
+      totalUsers,
+      totalPages,
+      currentPage: page,
+      pageSize,
+    };
+  } catch (error) {
+    console.error("Error fetching users with pagination:", error);
+    return null;
+  }
+};
+
+export const toggleUserBlockStatus = async (id: string, isBlocked: boolean) => {
+  try {
+    const user = await database.user.update({
+      where: { id },
+      data: { isBlocked },
+    });
+revalidatePath('/admin/users')
+    return {success:true,user:user};
+  } catch (error) {
+    console.error("Error updating user block status:", error);
     return null;
   }
 };
